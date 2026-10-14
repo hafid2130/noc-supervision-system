@@ -4,7 +4,7 @@ import { Server, Globe, CheckCircle2, AlertTriangle, LayoutDashboard, Network, T
 
 import DashboardMatrix from './components/DashboardMatrix';
 import NetworkMonitor from './components/NetworkMonitor';
-import Aidiagnostics from './components/Aidiagnostics';
+import AiDiagnostics from './components/AiDiagnostics';
 
 const SOCKET_URL = import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.1:5000';
 
@@ -127,7 +127,7 @@ export default function App() {
 
         {activeModule === 'dashboard' && <DashboardMatrix data={telemetryData} />}
         {activeModule === 'network' && <NetworkMonitor data={telemetryData} />}
-        {activeModule === 'ai' && <Aidiagnostics data={telemetryData} />}
+        {activeModule === 'ai' && <AiDiagnostics data={telemetryData} />}
       </main>
     </div>
   );
