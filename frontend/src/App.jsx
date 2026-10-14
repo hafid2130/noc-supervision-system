@@ -6,7 +6,7 @@ import DashboardMatrix from './components/DashboardMatrix';
 import NetworkMonitor from './components/NetworkMonitor';
 import AiDiagnostics from './components/AiDiagnostics';
 
-const SOCKET_URL = 'http://127.0.0.1:5000';
+const SOCKET_URL = import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.1:5000';
 
 const t = {
   id: {
