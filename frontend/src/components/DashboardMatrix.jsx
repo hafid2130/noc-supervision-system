@@ -50,7 +50,7 @@ export default function DashboardMatrix({ currentTelemetry, chartData, langText,
         </div>
         <div className={`${darkMode ? 'bg-slate-900/90 border-slate-800' : 'bg-white border-slate-200'} border p-3 rounded-xl relative shadow-sm`}>
           <div className={`text-[9px] font-bold ${darkMode ? 'text-slate-400' : 'text-slate-500'} uppercase`}>Avg Latency</div>
-          <div className="text-xl font-black text-blue-500 mt-0.5">{currentTelemetry.latency_ms}ms</div>
+          <div className="text-xl font-black text-blue-500 mt-0.5">{currentTelemetry?.latency_ms}ms</div>
           <div className="absolute top-3 right-3 text-blue-500"><Activity className="w-4 h-4" /></div>
         </div>
         <div className={`${darkMode ? 'bg-slate-900/90 border-slate-800' : 'bg-white border-slate-200'} border p-3 rounded-xl relative shadow-sm`}>
@@ -68,14 +68,14 @@ export default function DashboardMatrix({ currentTelemetry, chartData, langText,
             <h3 className={`text-xs font-bold ${darkMode ? 'text-white' : 'text-slate-900'} uppercase tracking-wider`}>Core Gateway Info</h3>
           </div>
           <div className="space-y-1 text-xs">
-            <div className="flex justify-between border-b border-slate-800/40 pb-1"><span className={darkMode ? 'text-slate-400' : 'text-slate-500'}>Target Host</span><span className="font-mono font-semibold">{currentTelemetry.target}</span></div>
+            <div className="flex justify-between border-b border-slate-800/40 pb-1"><span className={darkMode ? 'text-slate-400' : 'text-slate-500'}>Target Host</span><span className="font-mono font-semibold">{currentTelemetry?.target}</span></div>
             <div className="flex justify-between border-b border-slate-800/40 pb-1"><span className={darkMode ? 'text-slate-400' : 'text-slate-500'}>Protocol</span><span className="font-mono font-semibold">ICMP / SNMP v3</span></div>
             <div className="flex justify-between"><span className={darkMode ? 'text-slate-400' : 'text-slate-500'}>Status SLA</span><span className="font-mono text-emerald-500 font-semibold">99.98% (Optimal)</span></div>
           </div>
         </div>
 
-        <CircularGauge value={currentTelemetry.latency_ms} max={200} label={langText.latency} unit="ms" colorClass="text-blue-500" darkMode={darkMode} />
-        <CircularGauge value={currentTelemetry.download_mbps} max={100} label={langText.download} unit="Mbps" colorClass="text-emerald-500" darkMode={darkMode} />
+        <CircularGauge value={currentTelemetry?.latency_ms} max={200} label={langText.latency} unit="ms" colorClass="text-blue-500" darkMode={darkMode} />
+        <CircularGauge value={currentTelemetry?.download_mbps} max={100} label={langText.download} unit="Mbps" colorClass="text-emerald-500" darkMode={darkMode} />
       </div>
 
       {/* Baris Bawah: Grafik Recharts */}
@@ -85,7 +85,7 @@ export default function DashboardMatrix({ currentTelemetry, chartData, langText,
             <Activity className="w-4 h-4 text-blue-500" />
             <h2 className={`text-xs font-bold ${darkMode ? 'text-white' : 'text-slate-900'} uppercase tracking-wider`}>{langText.liveTicker}</h2>
           </div>
-          <span className={`text-[10px] ${darkMode ? 'text-slate-400 bg-slate-950' : 'text-slate-600 bg-slate-100'} px-2.5 py-1 rounded font-mono`}>Sync: {currentTelemetry.timestamp}</span>
+          <span className={`text-[10px] ${darkMode ? 'text-slate-400 bg-slate-950' : 'text-slate-600 bg-slate-100'} px-2.5 py-1 rounded font-mono`}>Sync: {currentTelemetry?.timestamp}</span>
         </div>
 
         <div className={`flex-1 w-full ${darkMode ? 'bg-slate-950/60 border-slate-800' : 'bg-slate-50 border-slate-200'} p-2 rounded-lg border min-h-0`}>
