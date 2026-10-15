@@ -35,12 +35,12 @@ export default function DashboardMatrix({ currentTelemetry, chartData, langText,
       <div className="grid grid-cols-5 gap-3 shrink-0">
         <div className={`${darkMode ? 'bg-slate-900/90 border-slate-800' : 'bg-white border-slate-200'} border p-2.5 rounded-xl relative shadow-sm`}>
           <div className={`text-[9px] font-bold ${darkMode ? 'text-slate-400' : 'text-slate-500'} uppercase`}>Total Devices</div>
-          <div className={`text-lg font-black ${darkMode ? 'text-white' : 'text-slate-900'} mt-0.5`}>25</div>
+          <div className={`text-lg font-black ${darkMode ? 'text-white' : 'text-slate-900'} mt-0.5`}>9</div>
           <div className="absolute top-2.5 right-2.5 text-blue-500"><Server className="w-3.5 h-3.5" /></div>
         </div>
         <div className={`${darkMode ? 'bg-slate-900/90 border-slate-800' : 'bg-white border-slate-200'} border p-2.5 rounded-xl relative shadow-sm`}>
           <div className={`text-[9px] font-bold ${darkMode ? 'text-slate-400' : 'text-slate-500'} uppercase`}>Online Nodes</div>
-          <div className="text-lg font-black text-emerald-500 mt-0.5">25</div>
+          <div className="text-lg font-black text-emerald-500 mt-0.5">9</div>
           <div className="absolute top-2.5 right-2.5 text-emerald-500"><Server className="w-3.5 h-3.5" /></div>
         </div>
         <div className={`${darkMode ? 'bg-slate-900/90 border-slate-800' : 'bg-white border-slate-200'} border p-2.5 rounded-xl relative shadow-sm`}>
