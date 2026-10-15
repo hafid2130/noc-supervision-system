@@ -1,6 +1,8 @@
+# STRICT REQUIREMENT: These two lines MUST be the absolute first execution steps
 import eventlet
 eventlet.monkey_patch()
 
+import os
 import time
 import random
 from flask import Flask, jsonify, request
@@ -11,24 +13,21 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'noc_cloud_supervision_secret_2026'
 CORS(app, resources={r"/*": {"origins": "*"}})
 
-# Bind explicitly to ensure cross-origin messaging context is uniform
+# Bind using the eventlet engine context explicitly
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
 
 MONITOR_TARGET = "1.1.1.1 (Cloudflare DNS / Edge)"
 LATENCY_THRESHOLD = 120  # ms
-
-# Keep track of whether the background task has already started
 bg_task_started = False
 
 def global_telemetry_loop():
     """Independently manages broadcast emitting loop from within the global scope context."""
     print("🚀 Cloud Telemetry Engine Berjalan...", flush=True)
     while True:
-        # Non-blocking async sleep
         socketio.sleep(1)
         
         base_latency = random.randint(30, 85)
-        if random.random() < 0.1:  # 10% chance of a latency spike
+        if random.random() < 0.1:  
             base_latency = random.randint(130, 190)
             
         is_spike = base_latency > LATENCY_THRESHOLD
@@ -49,8 +48,12 @@ def global_telemetry_loop():
             "active_nodes": 12
         }
 
-        # Broadcast telemetry packet globally to all connected clients
         socketio.emit('telemetry_stream', payload)
+
+@app.route('/', methods=['GET'])
+def home_ping():
+    """Fixes the 404 logs by responding gracefully to Render's live-checking system health queries."""
+    return jsonify({"status": "NOC Telemetry Cloud Router Alive"})
 
 @app.route('/api/status', methods=['GET'])
 def api_status():
@@ -75,10 +78,11 @@ def handle_connect():
     global bg_task_started
     print("🔌 Client terhubung ke WebSocket Server.", flush=True)
     
-    # Safely spin up the worker loop on the first connection if it hasn't started yet
     if not bg_task_started:
         socketio.start_background_task(target=global_telemetry_loop)
         bg_task_started = True
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=5000, debug=False)
+    # Dynamically read the active platform environment port (defaults to 5000 locally)
+    port = int(os.environ.get("PORT", 5000))
+    socketio.run(app, host='0.0.0.0', port=port, debug=False)
