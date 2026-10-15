@@ -52,7 +52,8 @@ export default function App() {
     status: 'HEALTHY',
     message: 'Menghubungkan ke server telemetri...',
     timestamp: '--:--',
-    target: '1.1.1.1 (Cloudflare Edge)'
+    target: '1.1.1.1 (Cloudflare Edge)',
+    active_nodes: 0
   });
 
   const [aiAnalysis, setAiAnalysis] = useState("System idle. Ready for autonomous network diagnostic run.");
@@ -89,7 +90,8 @@ export default function App() {
         status: data?.status ?? 'HEALTHY',
         message: data?.message ?? '',
         timestamp: data?.timestamp || new Date().toLocaleTimeString(),
-        target: data?.target || '1.1.1.1 (Cloudflare Edge)'
+        target: data?.target || '1.1.1.1 (Cloudflare Edge)',
+        active_nodes: data?.active_nodes ?? 0
       };
 
       setTelemetryData(safeData);
@@ -170,6 +172,7 @@ export default function App() {
         )}
         {activeModule === 'network' && (
           <NetworkMonitor 
+            currentTelemetry={telemetryData}
             darkMode={true} 
           />
         )}
