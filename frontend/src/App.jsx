@@ -44,6 +44,7 @@ const t = {
 
 export default function App() {
   const [activeModule, setActiveModule] = useState('dashboard');
+  const [chartHistory, setChartHistory] = useState([]);
   const [telemetryData, setTelemetryData] = useState({
     latency_ms: 0,
     download_mbps: 0,
@@ -76,7 +77,21 @@ export default function App() {
     });
 
     socket.on('telemetry_stream', (data) => {
-      setTelemetryData(data);
+      // Build a safe object parsing data fallbacks defensively
+      const safeData = {
+        latency_ms: data?.latency_ms ?? 0,
+        download_mbps: data?.download_mbps ?? 0,
+        upload_mbps: data?.upload_mbps ?? 0,
+        status: data?.status ?? 'HEALTHY',
+        message: data?.message ?? '',
+        timestamp: data?.timestamp || new Date().toLocaleTimeString(),
+        target: data?.target || '1.1.1.1 (Cloudflare Edge)'
+      };
+
+      setTelemetryData(safeData);
+
+      // Store the telemetry record into chart history, limiting the array to the last 15 points
+      setChartHistory((prev) => [...prev, safeData].slice(-15));
     });
 
     return () => {
@@ -140,7 +155,7 @@ export default function App() {
         {activeModule === 'dashboard' && (
           <DashboardMatrix 
             currentTelemetry={telemetryData} 
-            chartData={[]} 
+            chartData={chartHistory} 
             langText={t.id} 
             darkMode={true} 
           />
