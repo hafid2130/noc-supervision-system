@@ -55,7 +55,7 @@ export default function DashboardMatrix({ currentTelemetry, chartData, langText,
         </div>
         <div className={`${darkMode ? 'bg-slate-900/90 border-slate-800' : 'bg-white border-slate-200'} border p-2.5 rounded-xl relative shadow-sm`}>
           <div className={`text-[9px] font-bold ${darkMode ? 'text-slate-400' : 'text-slate-500'} uppercase`}>Data Centers</div>
-          <div className="text-lg font-black text-purple-500 mt-0.5">3</div>
+          <div className="text-lg font-black text-purple-500 mt-0.5">1</div>
           <div className="absolute top-2.5 right-2.5 text-purple-500"><Database className="w-3.5 h-3.5" /></div>
         </div>
       </div>
