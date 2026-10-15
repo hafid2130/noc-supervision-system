@@ -1,9 +1,12 @@
 import React from 'react';
 import { Network, CheckCircle2, ShieldCheck } from 'lucide-react';
 
-export default function NetworkMonitor({ darkMode }) {
+export default function NetworkMonitor({ currentTelemetry, darkMode }) {
+  // Leverage the incoming active node counts or fall back to standard asset metrics
+  const activeNodesCount = currentTelemetry?.active_nodes ?? 5;
+
   const clientNodes = [
-    { id: "NODE-01", name: "Core-Router-MikroTik", ip: "192.168.10.1", latency: "12 ms", status: "ONLINE", uptime: "99.99%" },
+    { id: "NODE-01", name: "Core-Router-MikroTik", ip: "192.168.10.1", latency: currentTelemetry?.latency_ms ? `${currentTelemetry.latency_ms} ms` : "12 ms", status: "ONLINE", uptime: "99.99%" },
     { id: "NODE-02", name: "Distribution-Switch-01", ip: "192.168.10.2", latency: "18 ms", status: "ONLINE", uptime: "99.95%" },
     { id: "NODE-03", name: "Access-Point-Floor-1", ip: "192.168.20.10", latency: "24 ms", status: "ONLINE", uptime: "99.80%" },
     { id: "NODE-04", name: "Database-Server-Cluster", ip: "192.168.50.5", latency: "8 ms", status: "ONLINE", uptime: "100.0%" },
@@ -16,7 +19,7 @@ export default function NetworkMonitor({ darkMode }) {
         <div className="flex items-center space-x-2">
           <Network className="w-5 h-5 text-blue-500" />
           <div>
-            <h2 className={`text-xs font-bold ${darkMode ? 'text-white' : 'text-slate-900'} uppercase tracking-wider`}>Client Network Infrastructure Topology (PoC Ready)</h2>
+            <h2 className={`text-xs font-bold ${darkMode ? 'text-white' : 'text-slate-900'} uppercase tracking-wider`}>Client Network Infrastructure Topology ({activeNodesCount} Nodes Detected)</h2>
             <p className={`text-[11px] ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Live status monitoring of customer active assets & gateways.</p>
           </div>
         </div>
