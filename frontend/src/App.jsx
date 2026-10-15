@@ -125,9 +125,28 @@ export default function App() {
           </div>
         </header>
 
-        {activeModule === 'dashboard' && <DashboardMatrix data={telemetryData} />}
-        {activeModule === 'network' && <NetworkMonitor data={telemetryData} />}
-        {activeModule === 'ai' && <AiDiagnostics data={telemetryData} />}
+        {activeModule === 'dashboard' && (
+          <DashboardMatrix 
+            currentTelemetry={telemetryData} 
+            chartData={[]} 
+            langText={t.id} 
+            darkMode={true} 
+          />
+        )}
+        {activeModule === 'network' && (
+          <NetworkMonitor 
+            currentTelemetry={telemetryData} 
+            langText={t.id} 
+            darkMode={true} 
+          />
+        )}
+        {activeModule === 'ai' && (
+          <AiDiagnostics 
+            currentTelemetry={telemetryData} 
+            langText={t.id} 
+            darkMode={true} 
+          />
+        )}
       </main>
     </div>
   );
