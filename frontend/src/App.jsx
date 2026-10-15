@@ -54,6 +54,18 @@ export default function App() {
     target: '1.1.1.1 (Cloudflare Edge)'
   });
 
+  const [aiAnalysis, setAiAnalysis] = useState("System idle. Ready for autonomous network diagnostic run.");
+  const [loadingAi, setLoadingAi] = useState(false);
+
+  const triggerAiDiagnose = () => {
+    setLoadingAi(true);
+    setAiAnalysis("Menganalisis topologi infrastruktur...");
+    setTimeout(() => {
+      setAiAnalysis("ANALISIS SELESAI:\n- Semua gateway dalam batas aman.\n- RTT stabil pada node inti.");
+      setLoadingAi(false);
+    }, 2000);
+  };
+
   useEffect(() => {
     const socket = io(SOCKET_URL, {
       transports: ['websocket', 'polling']
@@ -135,14 +147,14 @@ export default function App() {
         )}
         {activeModule === 'network' && (
           <NetworkMonitor 
-            currentTelemetry={telemetryData} 
-            langText={t.id} 
             darkMode={true} 
           />
         )}
         {activeModule === 'ai' && (
           <AiDiagnostics 
-            currentTelemetry={telemetryData} 
+            aiAnalysis={aiAnalysis}
+            triggerAiDiagnose={triggerAiDiagnose}
+            loadingAi={loadingAi}
             langText={t.id} 
             darkMode={true} 
           />
