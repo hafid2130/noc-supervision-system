@@ -33,7 +33,7 @@ export default function AiDiagnostics({ aiAnalysis, triggerAiDiagnose, loadingAi
             disabled={loadingAi}
             className="w-full py-2.5 bg-cyan-600 hover:bg-cyan-500 disabled:bg-slate-800 text-white font-bold rounded-xl text-xs transition shadow-lg"
           >
-            {loadingAi ? langText.aiAnalyzing : langText.aiBtn}
+            {loadingAi ? (langText?.aiAnalyzing || "Menganalisis...") : (langText?.aiBtn || "Jalankan Diagnostik AI")}
           </button>
         </div>
 
@@ -61,13 +61,6 @@ export default function AiDiagnostics({ aiAnalysis, triggerAiDiagnose, loadingAi
           <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 text-center text-[11px] text-slate-400 font-mono">
             System status: Ready and Live, Waiting for evaluation.
           </div>
-
-          {/* 
-            Gunakan blok di bawah ini jika sudah berada di jaringan client:
-            <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 text-center text-[11px] text-slate-400 font-mono">
-              System status: Ready for tender deployment & live PoC evaluation.
-            </div>
-          */}
         </div>
       </div>
     </div>
