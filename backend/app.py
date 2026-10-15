@@ -1,7 +1,3 @@
-# STRICT REQUIREMENT: These two lines MUST be the absolute first execution steps
-import eventlet
-eventlet.monkey_patch()
-
 import os
 import time
 import random
@@ -13,8 +9,8 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'noc_cloud_supervision_secret_2026'
 CORS(app, resources={r"/*": {"origins": "*"}})
 
-# Bind using the eventlet engine context explicitly
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
+# Initialize using the gevent async engine
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='gevent')
 
 MONITOR_TARGET = "1.1.1.1 (Cloudflare DNS / Edge)"
 LATENCY_THRESHOLD = 120  # ms
@@ -52,7 +48,6 @@ def global_telemetry_loop():
 
 @app.route('/', methods=['GET'])
 def home_ping():
-    """Fixes the 404 logs by responding gracefully to Render's live-checking system health queries."""
     return jsonify({"status": "NOC Telemetry Cloud Router Alive"})
 
 @app.route('/api/status', methods=['GET'])
@@ -62,16 +57,6 @@ def api_status():
         "target": MONITOR_TARGET,
         "server_time": time.strftime("%Y-%m-%d %H:%M:%S")
     })
-
-@app.route('/api/ai-diagnose', methods=['POST'])
-def ai_diagnose():
-    data = request.json or {}
-    latency = data.get('latency', 0)
-    if latency > LATENCY_THRESHOLD:
-        analysis = f"🤖 [NOC AI Advisor]: Anomali terdeteksi ({latency}ms). Jalur upstream mengalami kongesti."
-    else:
-        analysis = f"🤖 [NOC AI Advisor]: Sistem berjalan normal ({latency}ms)."
-    return jsonify({"analysis": analysis})
 
 @socketio.on('connect')
 def handle_connect():
@@ -83,6 +68,5 @@ def handle_connect():
         bg_task_started = True
 
 if __name__ == '__main__':
-    # Dynamically read the active platform environment port (defaults to 5000 locally)
     port = int(os.environ.get("PORT", 5000))
     socketio.run(app, host='0.0.0.0', port=port, debug=False)
