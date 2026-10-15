@@ -8,7 +8,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'noc_cloud_supervision_secret_2026'
 CORS(app, resources={r"/*": {"origins": "*"}})
 
-# Inisialisasi SocketIO untuk komunikasi real-time
+# Inisialisasi SocketIO dengan konfigurasi CORS universal
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 # Konfigurasi Target & Ambang Batas Default
@@ -40,13 +40,14 @@ def ai_diagnose():
 def background_telemetry_generator():
     """
     Generator telemetri real-time yang mensimulasikan pembacaan jaringan global 
-    agar berjalan mulus di cloud (Render) tanpa kendala platform OS.
+    menggunakan context manager internal SocketIO agar broadcast berjalan lancar.
     """
     print("🚀 Cloud Telemetry Engine Berjalan...")
     while True:
-        time.sleep(1) # Kirim data setiap 1 detik
+        # Gunakan pembungkus sleep dari SocketIO untuk menjaga concurrency loop async
+        socketio.sleep(1) 
         
-        # Simulasi fluktuasi latensi realistis (antara 25ms - 95ms, sesekali ada spike)
+        # Simulasi fluktuasi latensi realistis (antara 30ms - 85ms, sesekali ada spike)
         base_latency = random.randint(30, 85)
         if random.random() < 0.1:  # 10% kemungkinan terjadi lonjakan kecil (spike)
             base_latency = random.randint(130, 190)
@@ -73,10 +74,14 @@ def background_telemetry_generator():
         # Broadcast ke seluruh frontend yang terhubung via WebSocket
         socketio.emit('telemetry_stream', payload)
 
-if __name__ == '__main__':
-    import threading
-    t = threading.Thread(target=background_telemetry_generator)
-    t.daemon = True
-    t.start()
+@socketio.on('connect')
+def handle_connect():
+    """Mencatat aktivitas koneksi masuk dari client browser."""
+    print("🔌 Client terhubung ke WebSocket Server.")
 
-    socketio.run(app, host='0.0.0.0', port=5000, debug=True)
+if __name__ == '__main__':
+    # Daftarkan loop telemetri ke dalam manager task background bawaan SocketIO
+    socketio.start_background_task(background_telemetry_generator)
+
+    # Jalankan server. Parameter debug disetel ke False untuk menghindari instansiasi ganda
+    socketio.run(app, host='0.0.0.0', port=5000, debug=False)
