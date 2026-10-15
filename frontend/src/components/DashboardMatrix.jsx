@@ -5,7 +5,7 @@ import { Activity, Server, Database } from 'lucide-react';
 function CircularGauge({ value, max = 100, label, unit, colorClass, darkMode }) {
   const percent = Math.min(Math.max(value / max, 0), 1);
   return (
-    <div className={`${darkMode ? 'bg-slate-900/90 border-slate-800' : 'bg-white border-slate-200'} border p-3 rounded-xl flex flex-col justify-between shadow-md relative overflow-h-full`}>
+    <div className={`${darkMode ? 'bg-slate-900/90 border-slate-800' : 'bg-white border-slate-200'} border p-3 rounded-xl flex flex-col justify-between shadow-md relative overflow-hidden`}>
       <div className="flex items-center justify-between">
         <span className={`text-[10px] font-bold ${darkMode ? 'text-slate-400' : 'text-slate-500'} uppercase tracking-wider`}>{label}</span>
         <span className={`w-1.5 h-1.5 rounded-full ${colorClass === 'text-emerald-400' ? 'bg-emerald-500' : 'bg-blue-500'} animate-pulse`} />
@@ -30,7 +30,7 @@ function CircularGauge({ value, max = 100, label, unit, colorClass, darkMode }) 
 
 export default function DashboardMatrix({ currentTelemetry, chartData, langText, darkMode }) {
   return (
-    <div className="flex-1 flex flex-col gap-3 overflow-hidden">
+    <div className="flex-1 flex flex-col gap-3 min-h-0">
       {/* Baris Statistik Atas */}
       <div className="grid grid-cols-5 gap-3 shrink-0">
         <div className={`${darkMode ? 'bg-slate-900/90 border-slate-800' : 'bg-white border-slate-200'} border p-3 rounded-xl relative shadow-sm`}>
@@ -68,8 +68,8 @@ export default function DashboardMatrix({ currentTelemetry, chartData, langText,
             <h3 className={`text-xs font-bold ${darkMode ? 'text-white' : 'text-slate-900'} uppercase tracking-wider`}>Core Gateway Info</h3>
           </div>
           <div className="space-y-1 text-xs">
-            <div className="flex justify-between border-b border-slate-800/40 pb-1"><span className={darkMode ? 'text-slate-400' : 'text-slate-500'}>Target Host</span><span className="font-mono font-semibold">{currentTelemetry?.target}</span></div>
-            <div className="flex justify-between border-b border-slate-800/40 pb-1"><span className={darkMode ? 'text-slate-400' : 'text-slate-500'}>Protocol</span><span className="font-mono font-semibold">ICMP / SNMP v3</span></div>
+            <div className="flex justify-between border-b border-slate-800/40 pb-1"><span className={darkMode ? 'text-slate-400' : 'text-slate-500'}>Target Host</span><span className="font-mono font-semibold text-[10px]">{currentTelemetry?.target}</span></div>
+            <div className="flex justify-between border-b border-slate-800/40 pb-1"><span className={darkMode ? 'text-slate-400' : 'text-slate-500'}>Protocol</span><span className="font-mono font-semibold">ICMP / Network Ping</span></div>
             <div className="flex justify-between"><span className={darkMode ? 'text-slate-400' : 'text-slate-500'}>Status SLA</span><span className="font-mono text-emerald-500 font-semibold">99.98% (Optimal)</span></div>
           </div>
         </div>
@@ -78,7 +78,7 @@ export default function DashboardMatrix({ currentTelemetry, chartData, langText,
         <CircularGauge value={currentTelemetry?.download_mbps} max={100} label={langText?.download || "Download"} unit="Mbps" colorClass="text-emerald-500" darkMode={darkMode} />
       </div>
 
-      {/* Baris Bawah: Grafik Recharts */}
+      {/* Baris Bawah: Grafik Recharts Berjalan */}
       <div className={`flex-1 ${darkMode ? 'bg-slate-900/90 border-slate-800' : 'bg-white border-slate-200'} border p-4 rounded-xl flex flex-col min-h-0 shadow-sm`}>
         <div className="flex items-center justify-between mb-2 shrink-0">
           <div className="flex items-center gap-1.5">
@@ -88,17 +88,18 @@ export default function DashboardMatrix({ currentTelemetry, chartData, langText,
           <span className={`text-[10px] ${darkMode ? 'text-slate-400 bg-slate-950' : 'text-slate-600 bg-slate-100'} px-2.5 py-1 rounded font-mono`}>Sync: {currentTelemetry?.timestamp}</span>
         </div>
 
-        <div className={`flex-1 w-full ${darkMode ? 'bg-slate-950/60 border-slate-800' : 'bg-slate-50 border-slate-200'} p-2 rounded-lg border min-h-0`}>
+        {/* Tetapkan tinggi h-64 agar penampung ResponsiveContainer dapat merender grafik */}
+        <div className={`flex-1 w-full h-64 ${darkMode ? 'bg-slate-950/60 border-slate-800' : 'bg-slate-50 border-slate-200'} p-2 rounded-lg border min-h-0`}>
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={chartData}>
               <defs>
                 <linearGradient id="latencyGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.5}/>
+                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4}/>
                   <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.0}/>
                 </linearGradient>
               </defs>
-              <XAxis dataKey="timestamp" stroke={darkMode ? '#64748b' : '#94a3b8'} tick={{fontSize: 10}} />
-              <YAxis stroke={darkMode ? '#64748b' : '#94a3b8'} tick={{fontSize: 10}} unit=" ms" domain={[0, 'auto']} />
+              <XAxis dataKey="timestamp" stroke={darkMode ? '#64748b' : '#94a3b8'} tick={{fontSize: 9}} />
+              <YAxis stroke={darkMode ? '#64748b' : '#94a3b8'} tick={{fontSize: 9}} unit=" ms" domain={[0, 'auto']} />
               <Tooltip contentStyle={{ backgroundColor: darkMode ? '#020617' : '#ffffff', borderColor: darkMode ? '#334155' : '#cbd5e1', borderRadius: '8px', color: darkMode ? '#fff' : '#0f172a', fontSize: '11px' }} />
               <Area type="monotone" dataKey="latency_ms" stroke="#3b82f6" strokeWidth={2} fillOpacity={1} fill="url(#latencyGrad)" />
             </AreaChart>
