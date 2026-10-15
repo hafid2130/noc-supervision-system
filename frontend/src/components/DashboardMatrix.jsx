@@ -30,9 +30,9 @@ function CircularGauge({ value, max = 100, label, unit, colorClass, darkMode }) 
 
 export default function DashboardMatrix({ currentTelemetry, chartData, langText, darkMode }) {
   return (
-    <div className="flex-1 flex flex-col gap-3 min-h-0">
+    <div className="w-full space-y-4">
       {/* Baris Statistik Atas */}
-      <div className="grid grid-cols-5 gap-3 shrink-0">
+      <div className="grid grid-cols-5 gap-3">
         <div className={`${darkMode ? 'bg-slate-900/90 border-slate-800' : 'bg-white border-slate-200'} border p-3 rounded-xl relative shadow-sm`}>
           <div className={`text-[9px] font-bold ${darkMode ? 'text-slate-400' : 'text-slate-500'} uppercase`}>Total Devices</div>
           <div className={`text-xl font-black ${darkMode ? 'text-white' : 'text-slate-900'} mt-0.5`}>25</div>
@@ -61,7 +61,7 @@ export default function DashboardMatrix({ currentTelemetry, chartData, langText,
       </div>
 
       {/* Baris Tengah: Server Info & Gauges */}
-      <div className="grid grid-cols-3 gap-3 shrink-0 h-32">
+      <div className="grid grid-cols-3 gap-3 h-32">
         <div className={`${darkMode ? 'bg-slate-900/90 border-slate-800' : 'bg-white border-slate-200'} border p-3 rounded-xl flex flex-col justify-between shadow-sm`}>
           <div className="flex items-center space-x-1.5">
             <Server className="w-4 h-4 text-blue-500" />
@@ -79,19 +79,23 @@ export default function DashboardMatrix({ currentTelemetry, chartData, langText,
       </div>
 
       {/* Baris Bawah: Grafik Recharts Berjalan */}
-      <div className={`flex-1 ${darkMode ? 'bg-slate-900/90 border-slate-800' : 'bg-white border-slate-200'} border p-4 rounded-xl flex flex-col min-h-0 shadow-sm`}>
-        <div className="flex items-center justify-between mb-2 shrink-0">
+      <div className={`${darkMode ? 'bg-slate-900/90 border-slate-800' : 'bg-white border-slate-200'} border p-4 rounded-xl shadow-sm`}>
+        <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-1.5">
             <Activity className="w-4 h-4 text-blue-500" />
-            <h2 className={`text-xs font-bold ${darkMode ? 'text-white' : 'text-slate-900'} uppercase tracking-wider`}>{langText?.liveTicker || "Live Telemetry Ticker"}</h2>
+            <h2 className={`text-xs font-bold ${darkMode ? 'text-white' : 'text-slate-900'} uppercase tracking-wider`}>
+              {langText?.liveTicker || "Live Telemetry Ticker"}
+            </h2>
           </div>
-          <span className={`text-[10px] ${darkMode ? 'text-slate-400 bg-slate-950' : 'text-slate-600 bg-slate-100'} px-2.5 py-1 rounded font-mono`}>Sync: {currentTelemetry?.timestamp}</span>
+          <span className={`text-[10px] ${darkMode ? 'text-slate-400 bg-slate-950' : 'text-slate-600 bg-slate-100'} px-2.5 py-1 rounded font-mono`}>
+            Sync: {currentTelemetry?.timestamp || "--:--:--"}
+          </span>
         </div>
 
-        {/* Tetapkan tinggi h-64 agar penampung ResponsiveContainer dapat merender grafik */}
-        <div className={`flex-1 w-full h-64 ${darkMode ? 'bg-slate-950/60 border-slate-800' : 'bg-slate-50 border-slate-200'} p-2 rounded-lg border min-h-0`}>
+        {/* Kotak dimensi tetap tinggi 240px agar ResponsiveContainer dipaksa merender layout grafik */}
+        <div className="w-full h-[240px]">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={chartData}>
+            <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="latencyGrad" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4}/>
