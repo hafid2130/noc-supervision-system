@@ -1,4 +1,3 @@
-# CHOOSE ONE: EVENTLET MONKEY PATCH MUST BE AT THE VERY TOP (LINE 1 & 2)
 import eventlet
 eventlet.monkey_patch()
 
@@ -6,22 +5,20 @@ import time
 import random
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from flask_socketio import SocketIO, emit
+from flask_socketio import SocketIO
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'noc_cloud_supervision_secret_2026'
 CORS(app, resources={r"/*": {"origins": "*"}})
 
-# Inisialisasi SocketIO dengan engine async eventlet explicitly
+# Explicitly bind to eventlet async mode for predictable cloud broadcasting
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
 
-# Konfigurasi Target & Ambang Batas Default
 MONITOR_TARGET = "1.1.1.1 (Cloudflare DNS / Edge)"
 LATENCY_THRESHOLD = 120  # ms
 
 @app.route('/api/status', methods=['GET'])
 def api_status():
-    """Endpoint pengecekan status server NOC."""
     return jsonify({
         "status": "NOC Telemetry Cloud Engine Online",
         "target": MONITOR_TARGET,
@@ -30,31 +27,27 @@ def api_status():
 
 @app.route('/api/ai-diagnose', methods=['POST'])
 def ai_diagnose():
-    """Endpoint AI Anomaly Explainer."""
     data = request.json or {}
     latency = data.get('latency', 0)
-    
     if latency > LATENCY_THRESHOLD:
-        analysis = f"🤖 [NOC AI Advisor]: Terdeteksi anomali latensi tinggi ({latency}ms). Kemungkinan penyebab: Reduksi bandwidth upstream ISP."
+        analysis = f"🤖 [NOC AI Advisor]: Anomali terdeteksi ({latency}ms). Jalur upstream mengalami kongesti."
     else:
-        analysis = f"🤖 [NOC AI Advisor]: Sistem berjalan normal di angka {latency}ms."
-        
+        analysis = f"🤖 [NOC AI Advisor]: Sistem berjalan normal ({latency}ms)."
     return jsonify({"analysis": analysis})
 
 def background_telemetry_generator():
-    """Generator real-time yang memancarkan telemetri jaringan via eventlet helper loop."""
-    print("🚀 Cloud Telemetry Engine Berjalan...")
+    """Loops indefinitely, pushing standard metrics out over active connections."""
+    print("🚀 Cloud Telemetry Engine Berjalan...", flush=True)
     while True:
-        # Gunakan socketio.sleep() agar memberikan waktu thread async lain bernafas
-        socketio.sleep(1) 
+        socketio.sleep(1)  # Non-blocking async sleep
         
         base_latency = random.randint(30, 85)
-        if random.random() < 0.1:  
+        if random.random() < 0.1:  # 10% chance of a network spike
             base_latency = random.randint(130, 190)
             
         is_spike = base_latency > LATENCY_THRESHOLD
         status = "WARNING" if is_spike else "HEALTHY"
-        message = f"Lonjakan latensi terdeteksi ({base_latency}ms)!" if is_spike else "Jaringan stabil & optimal."
+        message = "Lonjakan latensi terdeteksi!" if is_spike else "Jaringan stabil & optimal."
 
         download_mbps = round(random.uniform(45.0, 95.2), 2)
         upload_mbps = round(random.uniform(15.0, 35.8), 2)
@@ -70,14 +63,14 @@ def background_telemetry_generator():
             "active_nodes": 12
         }
 
-        # Mengirimkan data streaming telemetri ke semua tab browser yang terkoneksi
         socketio.emit('telemetry_stream', payload)
 
 @socketio.on('connect')
 def handle_connect():
-    print("LOG: 🔌 Client baru terhubung ke cluster.")
+    print("🔌 Client terhubung ke WebSocket Server.", flush=True)
+
+# Start background task loop immediately within the eventlet environment wrapper
+socketio.start_background_task(background_telemetry_generator)
 
 if __name__ == '__main__':
-    # Memulai task background telemetri secara asinkron
-    socketio.start_background_task(background_telemetry_generator)
     socketio.run(app, host='0.0.0.0', port=5000, debug=False)
