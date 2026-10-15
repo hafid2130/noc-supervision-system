@@ -83,7 +83,7 @@ export default function DashboardMatrix({ currentTelemetry, chartData, langText,
         <div className="flex items-center justify-between mb-2 shrink-0">
           <div className="flex items-center gap-1.5">
             <Activity className="w-4 h-4 text-blue-500" />
-            <h2 className={`text-xs font-bold ${darkMode ? 'text-white' : 'text-slate-900'} uppercase tracking-wider`}>{langText?.liveTicker || "Live Telemetry"}</h2>
+            <h2 className={`text-xs font-bold ${darkMode ? 'text-white' : 'text-slate-900'} uppercase tracking-wider`}>{langText?.liveTicker || "Live Telemetry Ticker"}</h2>
           </div>
           <span className={`text-[10px] ${darkMode ? 'text-slate-400 bg-slate-950' : 'text-slate-600 bg-slate-100'} px-2.5 py-1 rounded font-mono`}>Sync: {currentTelemetry?.timestamp}</span>
         </div>
