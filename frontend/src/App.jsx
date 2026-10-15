@@ -68,16 +68,20 @@ export default function App() {
   };
 
   useEffect(() => {
+    // Optimized production parameters for robust single-worker synchronization
     const socket = io(SOCKET_URL, {
-      transports: ['websocket', 'polling']
+      transports: ['websocket'],
+      forceNew: true,
+      upgrade: false
     });
 
     socket.on('connect', () => {
-      console.log('Terhubung ke backend WebSocket Render');
+      console.log('Terhubung ke backend WebSocket Render via transport murni.');
     });
 
     socket.on('telemetry_stream', (data) => {
-      // Build a safe object parsing data fallbacks defensively
+      console.log('Paket telemetri baru diterima:', data);
+      
       const safeData = {
         latency_ms: data?.latency_ms ?? 0,
         download_mbps: data?.download_mbps ?? 0,
@@ -90,8 +94,12 @@ export default function App() {
 
       setTelemetryData(safeData);
 
-      // Store the telemetry record into chart history, limiting the array to the last 15 points
+      // Append incoming record to chart context arrays
       setChartHistory((prev) => [...prev, safeData].slice(-15));
+    });
+
+    socket.on('connect_error', (error) => {
+      console.error('WebSocket Error Terdeteksi:', error.message);
     });
 
     return () => {
